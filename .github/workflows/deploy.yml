@@ -23,7 +23,7 @@ jobs:
           role-to-assume: arn:aws:iam::187510174259:role/agent_github_role
           aws-region: us-east-1
 
-      - name: Deploy CloudFormation Stack
+      - name: Deploy CloudFormation Stack1
         run: |
           aws cloudformation deploy \
             --template-file template.yaml \

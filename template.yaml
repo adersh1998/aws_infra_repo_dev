@@ -1,6 +1,35 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Test S3
+Description: Production-ready S3 bucket with encryption 
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
 
 Resources:
   MyBucket:
     Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub infra-agent-${Environment}
+
+      VersioningConfiguration:
+        Status: Enabled
+
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt MySecureBucket.Arn
