@@ -14,7 +14,7 @@ Resources:
   MyBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub infra-agent-${Environment}
+      BucketName: !Sub infra-agent-${AWS::AccountId}-${Environment}
 
       VersioningConfiguration:
         Status: Enabled
