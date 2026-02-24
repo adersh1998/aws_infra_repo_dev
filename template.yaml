@@ -30,6 +30,11 @@ Resources:
           - ServerSideEncryptionByDefault:
               SSEAlgorithm: AES256
 
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref MyBucket
+
   BucketArn:
     Description: ARN of the S3 bucket
-    Value: !GetAtt MySecureBucket.Arn
+    Value: !GetAtt MyBucket.Arn
