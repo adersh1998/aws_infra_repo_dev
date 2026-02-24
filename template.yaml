@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: Production-ready S3 bucket with encryption 
+Description: Production-ready S3 bucket with encryption v1
 
 Parameters:
   Environment:
