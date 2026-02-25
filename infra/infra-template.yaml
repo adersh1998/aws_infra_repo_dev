@@ -33,7 +33,7 @@ Resources:
           ToPort: 5439
           CidrIp: 0.0.0.0/0  # Adjust as needed for your security requirements
       Tags:
-        - Key: tg_infra_${Environment}
+        - Key: tg_infra
           Value: !Sub RedshiftSG-${Environment}
 
   RedshiftSubnetGroup:
@@ -43,7 +43,7 @@ Resources:
       SubnetIds:
         - !Ref SubnetId
       Tags:
-        - Key: tg_infra_${Environment}
+        - Key: tg_infra
           Value: !Sub RedshiftSubnetGroup-${Environment}
   
   RedshiftCluster:
@@ -65,7 +65,7 @@ Resources:
       Encrypted: true
       AutomatedSnapshotRetentionPeriod: 7
       Tags:
-        - Key: Name
+        - Key: tg_infra
           Value: !Sub RedshiftCluster-${Environment}
         - Key: Environment
           Value: !Ref Environment
