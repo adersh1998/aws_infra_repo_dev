@@ -46,7 +46,7 @@ jobs:
       - name: Validate CloudFormation Template 1
         run: |
           aws cloudformation validate-template \
-            --template-body file://infra/template.yaml
+            --template-body file://infra/infra-template.yaml
       
       - name: Validate CloudFormation Template 2
         run: |
