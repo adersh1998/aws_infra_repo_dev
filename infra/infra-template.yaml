@@ -92,7 +92,7 @@ Resources:
 
 Outputs:
   BucketName:
-    Description: Name of the S3 bucket
+    Description: Bucket name
     Value: !Ref MyBucket
 
   BucketArn:
