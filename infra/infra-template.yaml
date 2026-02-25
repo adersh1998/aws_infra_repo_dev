@@ -15,10 +15,10 @@ Parameters:
     Default: admin
   VpcId:
     Description: Existing VPC ID
-    Type: AWS::EC2::VPC::Id
+    Type: String
   SubnetId:
     Description: Existing Subnet ID
-    Type: AWS::EC2::Subnet::Id
+    Type: String
   RedshiftSecretName:
     Type: String
     Default: !ImportValue
