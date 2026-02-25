@@ -51,7 +51,7 @@ Resources:
     Properties:
       ClusterType: single-node
       NodeType: ra3.large
-      DBName: ${Environment}_db
+      DBName: !Sub '${Environment}db'
       ClusterIdentifier: !Sub redshift-cluster-${AWS::AccountId}-${Environment}
       MasterUsername: !Ref MasterUsername
       MasterUserPassword: !Sub
