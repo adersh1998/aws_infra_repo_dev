@@ -15,14 +15,10 @@ Parameters:
     Default: admin
   VpcId:
     Description: Existing VPC ID
-    Type: String
+    Type: AWS::EC2::VPC::Id
   SubnetId:
     Description: Existing Subnet ID
-    Type: String
-  RedshiftSecretName:
-    Type: String
-    Default: !ImportValue
-      'Fn::Sub': redshift-${Environment}-secret-name  
+    Type: AWS::EC2::Subnet::Id 
 
 Resources:
 
@@ -58,7 +54,7 @@ Resources:
       DBName: ${Environment}_db
       ClusterIdentifier: !Sub redshift-cluster-${AWS::AccountId}-${Environment}
       MasterUsername: !Ref MasterUsername
-      MasterUserPassword: !Sub '{{resolve:secretsmanager:${RedshiftSecretName}:SecretString:password}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${ImportValue "redshift-${Environment}-secret-name"}:SecretString:password}}'
       VpcSecurityGroupIds:
         - !Ref RedshiftSG
       ClusterSubnetGroupName: !Ref RedshiftSubnetGroup
