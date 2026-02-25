@@ -48,13 +48,18 @@ Resources:
   
   RedshiftCluster:
     Type: AWS::Redshift::Cluster
+
+    Metadata:
+      RedshiftSecretName: !ImportValue
+        'Fn::Sub': redshift-${Environment}-secret-name
+
     Properties:
       ClusterType: single-node
       NodeType: dc2.large
       DBName: ${Environment}_db
       ClusterIdentifier: !Sub redshift-cluster-${AWS::AccountId}-${Environment}
       MasterUsername: !Ref MasterUsername
-      MasterUserPassword: !Sub '{{resolve:secretsmanager:${ImportValue "redshift-${Environment}-secret-name"}:SecretString:password}}'
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${RedshiftSecretName}:SecretString:password}}'
       VpcSecurityGroupIds:
         - !Ref RedshiftSG
       ClusterSubnetGroupName: !Ref RedshiftSubnetGroup
