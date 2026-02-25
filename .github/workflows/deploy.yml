@@ -64,7 +64,7 @@ jobs:
       - name: Deploy CloudFormation stack 2      
         run: |
           aws cloudformation deploy \
-            --template-file infra/template.yaml \
+            --template-file infra/infra-template.yaml \
             --stack-name ai-cloud-stack-$ENVIRONMENT \
             --parameter-overrides file://infra/params-$ENVIRONMENT.json \
             --capabilities CAPABILITY_NAMED_IAM
