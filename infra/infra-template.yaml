@@ -1,0 +1,101 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Production-ready S3 bucket with encryption v1
+
+Parameters:
+  Environment:
+    Type: String
+    Default: dev
+    AllowedValues:
+      - dev
+      - uat
+      - prod
+  MasterUsername:
+    Description: Master username
+    Type: String
+    Default: admin
+  VpcId:
+    Description: Existing VPC ID
+    Type: AWS::EC2::VPC::Id
+  SubnetId:
+    Description: Existing Subnet ID
+    Type: AWS::EC2::Subnet::Id
+  RedshiftSecretName:
+    Type: String
+    Default: !ImportValue
+      'Fn::Sub': redshift-${Environment}-secret-name  
+
+Resources:
+
+  RedshiftSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group for Redshift cluster
+      VpcId: !Ref VpcId
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 5439
+          ToPort: 5439
+          CidrIp: 0.0.0.0/0  # Adjust as needed for your security requirements
+      Tags:
+        - Key: tg_infra_${Environment}
+          Value: !Sub RedshiftSG-${Environment}
+
+  RedshiftSubnetGroup:
+    Type: AWS::Redshift::ClusterSubnetGroup
+    Properties:
+      Description: Subnet group for Redshift
+      SubnetIds:
+        - !Ref SubnetId
+      Tags:
+        - Key: tg_infra_${Environment}
+          Value: !Sub RedshiftSubnetGroup-${Environment}
+  
+  RedshiftCluster:
+    Type: AWS::Redshift::Cluster
+    Properties:
+      ClusterType: single-node
+      NodeType: dc2.large
+      DBName: ${Environment}_db
+      ClusterIdentifier: !Sub redshift-cluster-${AWS::AccountId}-${Environment}
+      MasterUsername: !Ref MasterUsername
+      MasterUserPassword: !Sub '{{resolve:secretsmanager:${RedshiftSecretName}:SecretString:password}}'
+      VpcSecurityGroupIds:
+        - !Ref RedshiftSG
+      ClusterSubnetGroupName: !Ref RedshiftSubnetGroup
+      PubliclyAccessible: false
+      Encrypted: true
+      AutomatedSnapshotRetentionPeriod: 7
+      Tags:
+        - Key: Name
+          Value: !Sub RedshiftCluster-${Environment}
+        - Key: Environment
+          Value: !Ref Environment
+
+
+  MyBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub infra-agent-${AWS::AccountId}-${Environment}
+
+      VersioningConfiguration:
+        Status: Enabled
+
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+
+Outputs:
+  BucketName:
+    Description: Name of the S3 bucket
+    Value: !Ref MyBucket
+
+  BucketArn:
+    Description: ARN of the S3 bucket
+    Value: !GetAtt MyBucket.Arn

@@ -1,0 +1,18 @@
+[
+  {
+    "ParameterKey": "Environment",
+    "ParameterValue": "dev"
+  },
+  {
+    "ParameterKey": "MasterUsername",
+    "ParameterValue": "admin"
+  },
+  {
+    "ParameterKey": "VpcId",
+    "ParameterValue": "vpc-056fafe5a067d9285"
+  },
+  {
+    "ParameterKey": "SubnetId",
+    "ParameterValue": "subnet-01b67a38ad64e8892"
+  }
+]

@@ -5,6 +5,17 @@ on:
     branches:
       - main
 
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Select Environment"
+        required: true
+        type: choice
+        options:
+          - dev
+          - uat
+          - prod
+
 permissions:
   id-token: write
   contents: read
@@ -15,7 +26,16 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+
+      - name: Set Environment Variable
+        id: set-env
+        run: |
+          if [ "${{ github.event_name }}" = "push" ]; then
+            echo "ENVIRONMENT=dev" >> $GITHUB_ENV
+          else
+            echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+          fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -23,9 +43,28 @@ jobs:
           role-to-assume: arn:aws:iam::187510174259:role/agent_github_role
           aws-region: us-east-1
 
-      - name: Deploy CloudFormation Stack1
+      - name: Validate CloudFormation Template 1
+        run: |
+          aws cloudformation validate-template \
+            --template-body file://infra/template.yaml
+      
+      - name: Validate CloudFormation Template 2
+        run: |
+          aws cloudformation validate-template \
+            --template-body file://infra/credentials-template.yaml
+
+      - name: Deploy CloudFormation stack 1
+        run: |
+         aws cloudformation deploy \
+            --template-file infra/credentials-template.yaml \
+            --stack-name infra-credentials-$ENVIRONMENT \
+            --parameter-overrides file://infra/params-$ENVIRONMENT.json
+            --capabilities CAPABILITY_NAMED_IAM
+
+      - name: Deploy CloudFormation stack 2      
         run: |
           aws cloudformation deploy \
-            --template-file template.yaml \
-            --stack-name ai-cloud-stack \
+            --template-file infra/template.yaml \
+            --stack-name ai-cloud-stack-$ENVIRONMENT \
+            --parameter-overrides file://infra/params-$ENVIRONMENT.json \
             --capabilities CAPABILITY_NAMED_IAM
