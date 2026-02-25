@@ -58,7 +58,7 @@ jobs:
          aws cloudformation deploy \
             --template-file infra/credentials-template.yaml \
             --stack-name infra-credentials-$ENVIRONMENT \
-            --parameter-overrides file://infra/params-$ENVIRONMENT.json
+            --parameter-overrides file://infra/params-$ENVIRONMENT.json \
             --capabilities CAPABILITY_NAMED_IAM
 
       - name: Deploy CloudFormation stack 2      
