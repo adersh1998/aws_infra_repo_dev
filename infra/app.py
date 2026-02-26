@@ -82,7 +82,7 @@ def lambda_handler(event, context):
     manifest_entries = [
         {"url": f"s3://{S3_BUCKET}/{key}", "mandatory": True}
         for key in parquet_files
-    ]
+    ][:2]
  
     manifest_key = f"{prefix}/manifest.json"
  

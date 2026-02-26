@@ -17,11 +17,11 @@
   },
   {
     "ParameterKey": "LayerS3Key",
-    "ParameterValue": "Lambda/lambda-layer.zip"
+    "ParameterValue": "lambda/lambda-layer.zip"
   },
   {
     "ParameterKey":"LambdaCodeS3Key",
-    "ParameterValue":"Lambda/script.zip"
+    "ParameterValue":"lambda/script.zip"
   },
   {
     "ParameterKey": "S3Bucket",
