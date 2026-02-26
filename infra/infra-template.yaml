@@ -170,11 +170,3 @@ Resources:
           REDSHIFT_IAM_ROLE: !GetAtt RedshiftS3CopyRole.Arn
 
 
-Outputs:
-  BucketName:
-    Description: S3Bucket name
-    Value: !Ref S3Bucket
-
-  BucketArn:
-    Description: ARN of the S3 bucket
-    Value: !GetAtt S3Bucket.Arn
