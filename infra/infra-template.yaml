@@ -25,27 +25,14 @@ Parameters:
   LambdaCodeS3Key:
     Description: s3 key for lambda script 
     Type: String 
+  S3Bucket:
+    Description: s3 bucket name
+    Type: String
+ 
       
 
 Resources:
-  S3Bucket:
-    Type: AWS::S3::Bucket
-    Properties:
-      BucketName: !Sub infra-agent-${AWS::AccountId}-${Environment}
 
-      VersioningConfiguration:
-        Status: Enabled
-
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
 
   RedshiftSG:
     Type: AWS::EC2::SecurityGroup

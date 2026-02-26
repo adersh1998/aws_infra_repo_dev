@@ -22,5 +22,9 @@
   {
     "ParameterKey":"LambdaCodeS3Key",
     "ParameterValue":"Lambda/script.zip"
+  },
+  {
+    "ParameterKey": "S3Bucket",
+    "ParameterValue":"infra-agent-187510174259-dev"
   }
 ]
