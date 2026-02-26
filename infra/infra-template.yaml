@@ -19,8 +19,32 @@ Parameters:
   SubnetId:
     Description: Existing Subnet ID
     Type: AWS::EC2::Subnet::Id 
+  LayerS3Key:
+    Description: s3 key for lambda layer
+    Type: String
+  LambdaCodeS3Key:
+    Description: s3 key for lambda script  
+      
 
 Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub infra-agent-${AWS::AccountId}-${Environment}
+
+      VersioningConfiguration:
+        Status: Enabled
+
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
 
   RedshiftSG:
     Type: AWS::EC2::SecurityGroup
@@ -45,7 +69,30 @@ Resources:
       Tags:
         - Key: tg_infra
           Value: !Sub RedshiftSubnetGroup-${Environment}
-  
+
+  RedshiftS3CopyRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: redshift.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        - PolicyName: RedshiftS3Access
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                Resource:
+                  - !Sub arn:aws:s3:::${S3Bucket}
+                  - !Sub arn:aws:s3:::${S3Bucket}/*
+
   RedshiftCluster:
     Type: AWS::Redshift::Cluster
     Properties:
@@ -58,37 +105,82 @@ Resources:
         - '{{resolve:secretsmanager:${SecretName}:SecretString:password}}'
         - SecretName: !ImportValue
             'Fn::Sub': redshift-${Environment}-secret-name
+      IamRoles:
+        - !GetAtt RedshiftS3CopyRole.Arn      
       VpcSecurityGroupIds:
         - !Ref RedshiftSG
       ClusterSubnetGroupName: !Ref RedshiftSubnetGroup
       PubliclyAccessible: false
       Encrypted: true
-      AutomatedSnapshotRetentionPeriod: 7
+      AutomatedSnapshotRetentionPeriod: 1
       Tags:
         - Key: tg_infra
           Value: !Sub RedshiftCluster-${Environment}
         - Key: Environment
           Value: !Ref Environment
 
-
-  MyBucket:
-    Type: AWS::S3::Bucket
+  LambdaLayer:
+    Type: AWS::Lambda::LayerVersion
     Properties:
-      BucketName: !Sub infra-agent-${AWS::AccountId}-${Environment}
+      LayerName: redshift-loader-layer
+      CompatibleRuntimes:
+        - python3.12
+      Content:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref LayerS3Key 
 
-      VersioningConfiguration:
-        Status: Enabled
+  LambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: LambdaAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:ListBucket
+                  - s3:PutObject
+                Resource:
+                  - !Sub arn:aws:s3:::${S3Bucket}
+                  - !Sub arn:aws:s3:::${S3Bucket}/*
+              - Effect: Allow
+                Action:
+                  - redshift-data:ExecuteStatement
+                  - redshift-data:DescribeStatement
+                Resource: !Sub 'arn:aws:redshift:${AWS::Region}:${AWS::AccountId}:cluster:${RedshiftCluster}'
 
-      PublicAccessBlockConfiguration:
-        BlockPublicAcls: true
-        BlockPublicPolicy: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
+  RedshiftLoaderLambda:
+    Type: AWS::Lambda::Function
+    Properties:
+      Runtime: python3.12
+      Handler: app.lambda_handler
+      Timeout: 900
+      MemorySize: 1024
+      Role: !GetAtt LambdaExecutionRole.Arn
+      Layers:
+        - !Ref LambdaLayer
+      Code:
+        S3Bucket: !Ref S3Bucket
+        S3Key: !Ref LambdaCodeS3Key
+      Environment:
+        Variables:
+          CLUSTER_ID: !Ref RedshiftCluster
+          DATABASE: !Sub '${Environment}db'
+          DB_USER: !Ref MasterUsername
+          S3_BUCKET: !Ref MyBucket
+          REDSHIFT_IAM_ROLE: !GetAtt RedshiftS3CopyRole.Arn
 
-      BucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
 
 Outputs:
   BucketName:

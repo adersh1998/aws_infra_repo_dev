@@ -14,5 +14,13 @@
   {
     "ParameterKey": "SubnetId",
     "ParameterValue": "subnet-01b67a38ad64e8892"
+  },
+  {
+    "ParameterKey": "LayerS3Key",
+    "ParameterValue": "Lambda/lambda-layer.zip"
+  },
+  {
+    "ParameterKey":"LambdaCodeS3Key",
+    "ParameterValue":"Lambda/script.zip"
   }
 ]

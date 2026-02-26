@@ -53,6 +53,14 @@ jobs:
           aws cloudformation validate-template \
             --template-body file://infra/credentials-template.yaml
 
+      - name: Upload Lambda Layer to S3
+        run: |
+          aws s3 cp lambda-layer.zip s3://infra-agent-187510174259-${environment}/lambda-layer.zip
+
+      - name: Upload Lambda Script to S3
+        run: |
+          aws s3 cp script.zip s3://infra-agent-187510174259-${environment}/script.zip
+
       - name: Deploy CloudFormation stack 1
         run: |
          aws cloudformation deploy \
