@@ -55,11 +55,11 @@ jobs:
 
       - name: Upload Lambda Layer to S3
         run: |
-          aws s3 cp lambda-layer.zip s3://infra-agent-187510174259-${environment}/lambda-layer.zip
+          aws s3 cp infra/lambda-layer.zip s3://infra-agent-187510174259-${environment}/lambda/lambda-layer.zip
 
       - name: Upload Lambda Script to S3
         run: |
-          aws s3 cp script.zip s3://infra-agent-187510174259-${environment}/script.zip
+          aws s3 cp infra/script.zip s3://infra-agent-187510174259-${environment}/lambda/script.zip
 
       - name: Deploy CloudFormation stack 1
         run: |
