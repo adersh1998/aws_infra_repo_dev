@@ -23,7 +23,8 @@ Parameters:
     Description: s3 key for lambda layer
     Type: String
   LambdaCodeS3Key:
-    Description: s3 key for lambda script  
+    Description: s3 key for lambda script 
+    Type: String 
       
 
 Resources:
