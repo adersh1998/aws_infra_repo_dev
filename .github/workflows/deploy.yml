@@ -53,14 +53,6 @@ jobs:
           aws cloudformation validate-template \
             --template-body file://infra/credentials-template.yaml
 
-      - name: Upload Lambda Layer to S3
-        run: |
-          aws s3 cp infra/lambda-layer.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/lambda-layer.zip
-
-      - name: Upload Lambda Script to S3
-        run: |
-          aws s3 cp infra/script.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/script.zip
-
       - name: Deploy CloudFormation stack 1
         run: |
          aws cloudformation deploy \
@@ -68,6 +60,14 @@ jobs:
             --stack-name infra-credentials-$ENVIRONMENT \
             --parameter-overrides file://infra/params-$ENVIRONMENT.json \
             --capabilities CAPABILITY_NAMED_IAM
+
+      - name: Upload Lambda Layer to S3
+        run: |
+          aws s3 cp infra/lambda-layer.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/lambda-layer.zip
+
+      - name: Upload Lambda Script to S3
+        run: |
+          aws s3 cp infra/script.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/script.zip      
 
       - name: Deploy CloudFormation stack 2      
         run: |
