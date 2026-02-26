@@ -179,15 +179,15 @@ Resources:
           CLUSTER_ID: !Ref RedshiftCluster
           DATABASE: !Sub '${Environment}db'
           DB_USER: !Ref MasterUsername
-          S3_BUCKET: !Ref MyBucket
+          S3_BUCKET: !Ref S3Bucket
           REDSHIFT_IAM_ROLE: !GetAtt RedshiftS3CopyRole.Arn
 
 
 Outputs:
   BucketName:
     Description: S3Bucket name
-    Value: !Ref MyBucket
+    Value: !Ref S3Bucket
 
   BucketArn:
     Description: ARN of the S3 bucket
-    Value: !GetAtt MyBucket.Arn
+    Value: !GetAtt S3Bucket.Arn
