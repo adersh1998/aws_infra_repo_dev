@@ -16,8 +16,12 @@
     "ParameterValue": "subnet-01b67a38ad64e8892"
   },
   {
-    "ParameterKey": "LayerS3Key",
-    "ParameterValue": "lambda/lambda-layer.zip"
+    "ParameterKey": "LayerS3Key1",
+    "ParameterValue": "lambda/pandas-layer.zip"
+  },
+  {
+    "ParameterKey":"LayerS3Key2",
+    "ParameterValue": "lambda/pyarrow-layer.zip"
   },
   {
     "ParameterKey":"LambdaCodeS3Key",

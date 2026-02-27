@@ -63,7 +63,8 @@ jobs:
 
       - name: Upload Lambda Layer to S3
         run: |
-          aws s3 cp infra/lambda-layer.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/lambda-layer.zip
+          aws s3 cp infra/pandas-layer.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/pandas-layer.zip
+          aws s3 cp infra/pyarrow-layer.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/pyarrow-layer.zip
 
       - name: Upload Lambda Script to S3
         run: |
