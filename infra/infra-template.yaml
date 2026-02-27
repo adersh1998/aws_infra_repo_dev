@@ -31,7 +31,9 @@ Parameters:
   S3Bucket:
     Description: s3 bucket name
     Type: String
- 
+  S3Bucket2:
+    Description: s3 bucket name
+    Type: String 
       
 
 Resources:
@@ -172,7 +174,6 @@ Resources:
       Role: !GetAtt LambdaExecutionRole.Arn
       Layers:
         - !Ref LambdaLayer1
-        - !Ref LambdaLayer2
       Code:
         S3Bucket: !Ref S3Bucket
         S3Key: !Ref LambdaCodeS3Key
@@ -181,7 +182,7 @@ Resources:
           CLUSTER_ID: !Ref RedshiftCluster
           DATABASE: !Sub '${Environment}db'
           DB_USER: !Ref MasterUsername
-          S3_BUCKET: !Ref S3Bucket
+          S3_BUCKET: !Ref S3Bucket2
           REDSHIFT_IAM_ROLE: !GetAtt RedshiftS3CopyRole.Arn
 
 
