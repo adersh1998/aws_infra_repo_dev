@@ -61,13 +61,10 @@ jobs:
             --parameter-overrides file://infra/params-$ENVIRONMENT.json \
             --capabilities CAPABILITY_NAMED_IAM
 
-      - name: Upload Lambda Layer to S3
+      - name: S3 file uploads
         run: |
           aws s3 cp infra/pandas-layer.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/pandas-layer.zip
           aws s3 cp infra/pyarrow-layer.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/pyarrow-layer.zip
-
-      - name: Upload Lambda Script to S3
-        run: |
           aws s3 cp infra/script.zip s3://infra-agent-187510174259-${ENVIRONMENT}/lambda/script.zip      
 
       - name: Deploy CloudFormation stack 2      

@@ -34,5 +34,9 @@
   {
     "ParameterKey": "S3Bucket2",
     "ParameterValue":"deflt-187510174259"
+  },
+  {
+    "ParameterKey": "S3Prefix",
+    "ParameterValue":"data/splitted/"
   }
 ]

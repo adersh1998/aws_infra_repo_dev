@@ -34,11 +34,13 @@ Parameters:
   S3Bucket2:
     Description: s3 bucket name
     Type: String 
+  S3Prefix:
+    Description: s3 prefix for data files
+    Type: String  
+
       
 
 Resources:
-
-
   RedshiftSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -162,6 +164,7 @@ Resources:
                 Action:
                   - redshift-data:ExecuteStatement
                   - redshift-data:DescribeStatement
+                  - redshift-data:GetStatementResult
                 Resource: !Sub 'arn:aws:redshift:${AWS::Region}:${AWS::AccountId}:cluster:${RedshiftCluster}'
 
   RedshiftLoaderLambda:
@@ -183,6 +186,7 @@ Resources:
           DATABASE: !Sub '${Environment}db'
           DB_USER: !Ref MasterUsername
           S3_BUCKET: !Ref S3Bucket2
+          S3_PREFIX: !Sub '${S3Prefix}'
           REDSHIFT_IAM_ROLE: !GetAtt RedshiftS3CopyRole.Arn
 
 
