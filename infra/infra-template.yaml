@@ -173,7 +173,7 @@ Resources:
       MemorySize: 1024
       Role: !GetAtt LambdaExecutionRole.Arn
       Layers:
-        - !Ref LambdaLayer1
+        - !Ref LambdaLayer2
       Code:
         S3Bucket: !Ref S3Bucket
         S3Key: !Ref LambdaCodeS3Key
